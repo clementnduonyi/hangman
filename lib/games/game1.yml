@@ -1,0 +1,6 @@
+---
+- !ruby/object:GameConsol
+  secret_word: unless
+  show_guesses: ____ss
+  guess_chances: 6
+  guesses: dascsave
