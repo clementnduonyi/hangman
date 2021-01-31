@@ -16,9 +16,7 @@ class SecretWord
             line = dictionary[rand(dictionary.length)].strip.downcase
             if line.length <= 12 && line.length >= 5 
                 return line
-                #/[[:lower:]]/.match(line[0])
-            #line = line.chomp
-                #words << line
+                
             end
         end
     end
@@ -28,8 +26,7 @@ end
 class GameConsol
     attr_accessor :secret_word, :show_guesses, :guess_chances, :guesses
 
-    def initialize
-        #play_maker  
+    def initialize 
         @secret_word = SecretWord.new.words
         @show_guesses = '_' * secret_word.length
         @guess_chances = 10
@@ -37,21 +34,13 @@ class GameConsol
     end
 
     def start()
-        loop do
-            puts "Enetr [1] to play new game"
-            puts "Enter [2] to load your saved game"
-            choice = gets.chomp
-            if choice == '1'
-                play_maker
-                break
-            elsif choice == "2"
-                load_saved_game
-                break
-            else
-                puts "Invalid input. Retry!"
-            end
+        puts "Enetr [1] to play new game"
+        puts "Enter [2] to load your saved game"
+        if choice == '2'
+            load_saved_game
         end
-        
+        play_maker
+             
     end
     #end
 
@@ -66,7 +55,7 @@ class GameConsol
     def guess_work
         loop do
             display()
-            puts 'Enter your guess(a - z): '
+            puts 'Make a guess(a - z): '
             guess = gets.chomp.downcase
 
             return guess if valid_point?(guess)
@@ -75,30 +64,15 @@ class GameConsol
         end
         guess_work
     end
-
+ 
     def valid_point?(guess)
-        #('a'..'z').include?(guess) && !guesses.include?(guess)
-        #true if /[[:alpha:]]/.match(guess) && guess.length == 1
         print "\nA repeated guess!\n" if @guesses.include?(guess)
-        #begin
-            #display
-            #print "Enter a letter, or type save to save progress: "
-            #guess = gets.chomp
-            #saved if guess == 'save'
-            #raise "Invalid input: #{guess}" unless /[[:alpha:]]/.match(guess) && guess.length == 1
-            #raise "You've already guessed that letter!" if @guessed.include?(guess) #||
-                                                           #@guessed.include?(guess.magenta)
-            #enter_guess(guess.downcase)
-        #rescue StandardError => e
-            #puts
-            #puts e.to_s
-            #retry
-          #end
-        #end
-      
-        if secret_word.include?(guess)
+       
+        if secret_word.include?(guess) && !show_guesses.include?(guess)
+            print "\nCorrect Guess!\n"
             self.guess_chances -= 0
         else
+            print "\nWrong Guess!\n"
             self.guess_chances -= 1
     
         end
@@ -116,22 +90,24 @@ class GameConsol
         else
             print "\nInvalid guess. Retry!\n"
         end
-        saved() if %w[SAVE save].include?(guess) #== 'save'
+        saved() if %w[SAVE save].include?(guess) 
       
                 
     end
 
     def win?
-        true if @secret_word == show_guesses 
+        if @secret_word == show_guesses
+            true
+        end
     end
 
     def end_game
         if win?
-            puts "You guessed Right"
+            puts "You guessed Right and you still have #{guess_chances} trial(s) left!"
             puts
-            puts "Secret word: #{secret_word}"
+            puts "Secret word:  #{secret_word}"
         elsif !win?
-            puts "You could not guess the secret word"
+            puts "You could not guess the secret word and you have #{guess_chances} trial(s) left!"
             puts
             puts "Secret word: #{secret_word}"
         end
@@ -159,6 +135,15 @@ class GameConsol
         
         end
         end_game()
+    end
+
+    def choice
+        choice = gets.chomp
+        if %w[1 2].include?(choice)
+            return choice
+        else
+            puts "Invalid input. Retry!"
+        end
     end
 
     def saved
@@ -201,10 +186,10 @@ class GameConsol
 
     def deserialized(load_file)
         yaml = YAML.load_file("./games/#{load_file}.yml")
-        self.secret_word = yaml[0].secret_word
-        self.show_guesses = yaml[0].show_guesses
-        self.guess_chances = yaml[0].guess_chances
-        self.guesses = yaml[0].guesses
+        @secret_word = yaml[0].secret_word
+        @show_guesses = yaml[0].show_guesses
+        @guess_chances = yaml[0].guess_chances
+        @guesses = yaml[0].guesses
     end
 
     def saved_games
