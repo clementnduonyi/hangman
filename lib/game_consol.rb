@@ -71,7 +71,7 @@ class GameConsol
         if secret_word.include?(guess) && !show_guesses.include?(guess)
             print "\nCorrect Guess!\n"
             self.guess_chances -= 0
-        else
+        elsif !secret_word.include?(guess) 
             print "\nWrong Guess!\n"
             self.guess_chances -= 1
     
@@ -163,16 +163,16 @@ class GameConsol
     def load_saved_game
         unless Dir.exist?('games')
             puts 'No saved games found. Starting new game...'
-            sleep(5)
+            sleep(3)
             return
         end
         game_log = saved_games
         puts game_log
-        deserialized(load_file(game_log))
+        deserialized(load_game_file(game_log))
         #end
     end
 
-    def load_file(game_log)
+    def load_game_file(game_log)
         loop do
             print "\nEnter game name to load\n"
             load_file = gets.chomp
